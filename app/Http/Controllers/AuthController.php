@@ -27,7 +27,7 @@ class AuthController extends Controller
 
     public function login()
     {
-        logout_all_guards();
+        // logout_all_guards();
 
         return view('login-registration');
     }
@@ -107,7 +107,7 @@ class AuthController extends Controller
     {
         if(Auth::check())
         {
-            $games = Game::paginate(10);
+            $games = Game::where('status', '!=', 2)->paginate(10);
             $gametypes = SportsGamesType::all();
 
             return view('dashboard', compact('games', 'gametypes'));

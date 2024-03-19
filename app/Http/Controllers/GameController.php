@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Game;
+use App\Models\Bets;
 use App\Models\SportsGamesType;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class GameController extends Controller
 {
@@ -63,7 +65,11 @@ class GameController extends Controller
             'game_type_id' => ['required']
         ]);
 
-        $game = Game::create(array_merge($request->all(), ['created_by' => Auth::user()->id, 'status' => 1]));
+        
+        // Format the game_date before saving
+        $gameDate = Carbon::createFromFormat('Y-m-d\TH:i', $request->input('game_date'))->toDateTimeString();
+
+        $game = Game::create(array_merge($request->except('game_date'), ['game_date' => $gameDate, 'created_by' => Auth::user()->id, 'status' => 1]));
 
         if ($game) {
             return redirect()->route('games.index')
@@ -155,11 +161,25 @@ class GameController extends Controller
         //
         abort_if(Gate::denies('delete_games'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $game = Game::find($id);
+        $game = Game::withTrashed()->find($id);
+
+        if ($game->trashed()) {
+            return redirect()->route('games.index')->with('error', 'Game already soft-deleted');
+        }
+
+        if ($game->status == 2) {
+            return redirect()->route('games.index')->with('error', 'Game already completed. Cannot be soft-deleted');
+        }
 
         $statusUpdate = Game::where('id', $id)->update(['status' => 0, 'updated_by' => Auth::user()->id]);
 
         if ($statusUpdate) {
+            // cancel bets associated with the game
+            $bets = Bets::whereRaw("CHARINDEX(?, game_id) > 0", [strval($game->id)])->where('status', '=', 1)->get();
+            foreach($bets as $bet) {
+                $bet->status = 0;
+                $bet->save();
+            }
             $game->delete();
             return redirect()->route('games.index')->with('success', 'Game soft-deleted successfully');
         } else {
@@ -186,6 +206,11 @@ class GameController extends Controller
         $statusUpdate = Game::withTrashed()->where('id', $id)->update(['status' => 1, 'updated_by' => Auth::user()->id]);
 
         if ($statusUpdate) {
+            $bets = Bets::whereRaw("CHARINDEX(?, game_id) > 0", [strval($game->id)])->where('status', '=', 0)->get();
+            foreach($bets as $bet) {
+                $bet->status = 1;
+                $bet->save();
+            }
             $game->restore();
             return redirect()->route('games.index')->with('success', 'Game restored successfully');
         } else {

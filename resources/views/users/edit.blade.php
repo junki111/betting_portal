@@ -75,9 +75,9 @@
 
                                 @if (Auth::user()->type != 3)
                                     <div class="form-group row mb-3">
-                                        <label for="role" class="col-3 col-form-label">Role</label>
+                                        <label for="type" class="col-3 col-form-label">Role</label>
                                         <div class="col-3">
-                                            <select name="role" id="role" class="form-group custom-select" required>
+                                            <select name="type" id="type" class="form-group custom-select" required>
                                                 {{-- @foreach ($roles as $role)
                                                 <option @if ($user->role == $role->name) selected="selected"
                                                         @endif value="{{$role->name}}">{{$role->name}}</option>

@@ -22,8 +22,11 @@ return new class extends Migration
             $table->double('away_team_odds');
             $table->string('draw');
             $table->double('draw_odds');
-            $table->string('game_date');
+            $table->dateTime('game_date');
             $table->integer('status')->default(1);
+            $table->integer('home_team_score')->nullable();
+            $table->integer('away_team_score')->nullable();
+            $table->string('game_result')->nullable();
             $table->unsignedBigInteger('game_type_id');
             $table->foreign('game_type_id')->references('id')->on('sports_games_type');
             $table->unsignedBigInteger('created_by');

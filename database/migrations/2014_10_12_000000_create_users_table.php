@@ -24,6 +24,10 @@ return new class extends Migration
             $table->string('password');
             $table->integer('type');
             $table->integer('status')->default(1);
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users');
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreign('updated_by')->references('id')->on('users');
             $table->rememberToken();
             $table->timestamps();
         });

@@ -1,4 +1,4 @@
-<link rel="shortcut icon" href="{{ URL::asset('assets/images/favicon.ico') }}">
+<link rel="shortcut icon" href="{{ URL::asset('assets/images/favicon.ico') }}" type="image/x-icon" />
 
 @yield('css')
 

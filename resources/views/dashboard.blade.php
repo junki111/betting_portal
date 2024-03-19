@@ -49,19 +49,19 @@
                                     <tr class="text-center">
                                         <th>Match Details</th>
                                         <th>Odds</th>
-                                        <th>Action</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($games as $game)
                                         @if ($game->game_type_id == $gametype->id)
                                             <tr>
-                                                <td class="text-center">
+                                                <td class="align-middle text-center">
                                                     <div class="d-flex justify-content-center">
                                                         <div>
                                                             <span>{{ $game->home_team }}<img
                                                                     class="avatar-sm rounded-circle mr-2"
-                                                                    src="assets/img/table/scotland.png"
+                                                                    src="{{ URL::asset('assets/images/football.png') }}"
                                                                     alt=""></span>
                                                         </div>
                                                         <div>
@@ -71,12 +71,12 @@
                                                         </div>
                                                         <div>
                                                             <span><img class="avatar-sm rounded-circle mr-2"
-                                                                    src="assets/img/table/england.png"
+                                                                    src="{{ URL::asset('assets/images/football.png') }}"
                                                                     alt="">{{ $game->away_team }}</span>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>
+                                                <td class="align-middle text-center">
                                                     <div class="game-card row" data-game-id="{{ $game->id }}"
                                                         data-game-match-details="{{ $game->home_team }}. ' VS ' .{{ $game->away_team }}">
                                                         <div class="col-lg-4">
@@ -113,6 +113,15 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    @if ($game->status == 1)
+                                                        <span class="badge badge-warning">Active</span>
+                                                    @elseif ($game->status == 2)
+                                                        <span class="badge badge-success">Complete</span>
+                                                    @else
+                                                        <span class="badge badge-danger">Inactive</span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endif
@@ -170,8 +179,6 @@
 @endsection
 
 @section('script')
-    <!-- datatable js -->
-    <script src="{{ URL::asset('assets/libs/datatables/datatables.min.js') }}"></script>
     <script>
         // Initialize an empty array to store selected games
         let selectedGames = [];
@@ -181,7 +188,7 @@
         function openBetModal() {
             // Code to fetch selected games' details and populate the modal
             let modalBody = document.querySelector('#gameDetails');
-            modalBody.innerHtml = '';
+            modalBody.innerHTML = '';
 
             // Populate the modal body with the selected data
             for (let i = 0; i < selectedGames.length; i++) {
@@ -232,20 +239,36 @@
                 const team = item.getAttribute('data-team');
                 const odd = item.getAttribute('data-odd');
 
-                // Toggle selection state
-                if (item.classList.contains('selected')) {
-                    item.classList.remove('selected');
-                    item.classList.remove('badge');
-                    item.classList.remove('badge-primary');
-                    // Remove from selected games list
-                    removeGameFromSelection(gameId, team, odd);
-                } else {
-                    item.classList.add('selected');
-                    item.classList.add('badge');
-                    item.classList.add('badge-primary');
-                    // Add to selected games list
-                    addGameToSelection(gameId, team, odd, gameMatchDetails);
-                }
+
+                //Toggle selection state
+                // if (item.classList.contains('selected')) {
+                //     item.classList.remove('selected');
+                //     item.classList.remove('badge');
+                //     item.classList.remove('badge-primary');
+                //     // Remove from selected games list
+                //     removeGameFromSelection(gameId, team, odd);
+                // } else {
+                document.querySelectorAll(`.game-card[data-game-id="${gameId}"] .team-odd.selected`)
+                    .forEach(selectedItem => {
+                        if (selectedItem !== item) {
+                            selectedItem.classList.remove('selected');
+                            selectedItem.classList.remove('badge');
+                            selectedItem.classList.remove('badge-primary');
+
+                            // Remove from selected games list
+                            removeGameFromSelection(gameId, selectedItem.getAttribute('data-team'),
+                                selectedItem.getAttribute('data-odd'));
+                        }
+                    });
+                item.classList.add('selected');
+                item.classList.add('badge');
+                item.classList.add('badge-primary');
+                // Add to selected games list
+                addGameToSelection(gameId, team, odd, gameMatchDetails);
+                console.log(selectedGames);
+                console.log(selectedTeams);
+                console.log(selectedOdds);
+                //}
             });
         });
 
@@ -261,16 +284,17 @@
         }
 
         // Function to remove game from selection
-        function removeGameFromSelection(gameId) {
+        function removeGameFromSelection(gameId, teamId, oddVal) {
             // Find and remove the game from the array
             selectedGames = selectedGames.filter(game => game.gameId !== gameId);
-            selectedTeams = selectedTeams.filter(team => team !== team);
-            selectedOdds = selectedOdds.filter(odd => odd !== odd);
+            selectedTeams = selectedTeams.filter(team => team !== teamId);
+            selectedOdds = selectedOdds.filter(odd => odd !== oddVal);
         }
     </script>
+    <!-- datatable js -->
+    <script src="{{ URL::asset('assets/libs/datatables/datatables.min.js') }}"></script>
 @endsection
 
 @section('script-bottom')
     <!-- Datatables init -->
-    <script src="{{ URL::asset('assets/js/pages/datatables.init.js') }}"></script>
 @endsection

@@ -197,7 +197,15 @@ class BetsController extends Controller
         //
         abort_if(Gate::denies('delete_bets'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $bet = Bets::find($id);
+        $bet = Bets::withTrashed()->find($id);
+
+        if ($bet->trashed()) {
+            return redirect()->route('bets.index')->with('error', 'Bet already cancelled.');
+        }
+
+        if ($bet->status == 2 || $bet->status == 3){
+            return redirect()->route('bets.index')->with('error', 'Bet already in progress or completed. Cannot cancel.');
+        }
 
         $statusUpdate = Bets::where('id', $id)->update(['status' => 0, 'updated_by' => Auth::user()->id]);
 

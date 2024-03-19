@@ -8,6 +8,7 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\SportsGamesTypeController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\BetsController;
+use App\Http\Controllers\AccountsController;
 
 
 /*
@@ -87,12 +88,17 @@ Route::middleware('auth')->group(function() {
         Route::patch('{bet}/restore', [BetsController::class, 'restore'])->name('restore');
     });
 
+    Route::prefix('accounts')->name('accounts.')->group(function () {
+        Route::get('/', [AccountsController::class, 'index'])->name('index');
+    });
+
     // Our resource routes
     Route::resource('roles', RolePermissionController::class);
     Route::resource('users', UserController::class);
     Route::resource('games', GameController::class);
     Route::resource('gametypes', SportsGamesTypeController::class);
     Route::resource('bets', BetsController::class);
+    Route::resource('accounts', AccountsController::class);
 });
 
 Route::get('console', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');

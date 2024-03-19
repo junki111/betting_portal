@@ -54,9 +54,13 @@
                                         </td>
                                         <td class="align-middle">
                                             @if ($bet->status == 1)
-                                                <span class="badge badge-success">Active</span>
+                                                <span class="badge badge-info">Pending</span>
+                                            @elseif ($bet->status == 2)
+                                                <span class="badge badge-success">Completed</span>
+                                            @elseif ($bet->status == 3)
+                                                <span class="badge badge-warning">Active</span>
                                             @else
-                                                <span class="badge badge-danger">Inactive</span>
+                                                <span class="badge badge-danger">Cancelled</span>
                                             @endif
                                         </td>
                                         <td class="align-middle">

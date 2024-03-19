@@ -31,8 +31,9 @@
                         </div>
                         <div class="col-lg-6">
                             @can('view_bets')
-                                <a href="{{ route('bets.index') }}" class="btn btn-sm btn-soft-primary float-right"
-                                    rel="tooltip" data-placement="top" title="Back to Bets">
+                                <a href="javascript:void(0)" onclick="history.back()"
+                                    class="btn btn-sm btn-soft-primary float-right" rel="tooltip" data-placement="top"
+                                    title="Back to Bets">
                                     <i class="uil uil-arrow-left"> Back to Bets</i>
                                 </a>
                             @endcan
@@ -48,23 +49,28 @@
                                 <div class="form-group row mb-3 align-items-center">
                                     <label for="match_details" class="col-2 col-form-label"><span>Match
                                             Details</span></label>
-                                    <div class="d-flex justify-content-center" id="match_details">
+                                    <div class="d-flex" id="match_details">
                                         <div>
                                             <span
                                                 class="{{ in_array($game->home_team, $bet_types) ? 'badge badge-primary' : '' }}">{{ $game->home_team }}</span>
-                                            <img class="avatar-sm rounded-circle mr-2" src="assets/img/table/scotland.png"
-                                                alt="">
+                                            <img class="avatar-sm rounded-circle mr-2"
+                                                src="{{ URL::asset('assets/images/football.png') }}" alt="">
                                         </div>
                                         <div>
-                                            <span class="ml-5 mr-5">
+                                            <span
+                                                class="{{ in_array($game->draw, $bet_types) ? 'badge badge-primary' : '' }} ml-5 mr-5">
                                                 VS
                                             </span>
                                         </div>
                                         <div>
+                                            <img class="avatar-sm rounded-circle mr-2"
+                                                src="{{ URL::asset('assets/images/football.png') }}" alt="">
                                             <span
                                                 class="{{ in_array($game->away_team, $bet_types) ? 'badge badge-primary' : '' }}">{{ $game->away_team }}</span>
-                                            <img class="avatar-sm rounded-circle mr-2" src="assets/img/table/england.png"
-                                                alt="">
+                                        </div>
+                                        <div class="ml-5">
+                                            <span class="badge badge-success"
+                                                id="matchWinner">{{ $game->game_result }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -85,6 +91,17 @@
                                         Winnings</span></label>
                                 <div class="col-4">
                                     <span id="bet_potential">{{ round($bet->bet_potential_winnings, 2) }}Ksh</span>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3 align-items-center">
+                                <label for="result" class="col-2 col-form-label"><span
+                                        class="badge badge-secondary">Result</span></label>
+                                <div class="col-4">
+                                    @if ($bet->result == 'win')
+                                        <span class="badge badge-success" id="result">{{ $bet->result }}</span>
+                                    @elseif ($bet->result == 'loss')
+                                        <span class="badge badge-danger" id="result">{{ $bet->result }}</span>
+                                    @endif
                                 </div>
                             </div>
                         </div>

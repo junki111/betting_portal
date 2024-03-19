@@ -6,6 +6,7 @@ use App\Mail\WelcomeEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use app\Models\User;
+use App\Models\Bets;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use \Spatie\Permission\Models\Role;
@@ -73,7 +74,7 @@ class UserController extends Controller
         // generate random password
         $password = Str::random(8);
 
-        $user = User::create(array_merge($request->all(), ['password' => Hash::make($password), 'status' => 1]));
+        $user = User::create(array_merge($request->all(), ['password' => Hash::make($password), 'status' => 1, 'created_by' => Auth::user()->id]));
 
         if ($user) {
             $role = role_name($request->type);
@@ -102,7 +103,10 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        return view('users.show', compact('user'));
+        // get user bets
+        $bets = Bets::withTrashed()->where('user_id', $user->id)->paginate(10);
+
+        return view('users.show', compact('user', 'bets'));
 
     }
 
@@ -152,7 +156,7 @@ class UserController extends Controller
             return redirect()->back();
         }
 
-        $user->update($request->all());
+        $user->update(array_merge($request->all(), ['updated_by' => Auth::user()->id]));
         
         if ($user) {
             if(!$request->role) {
@@ -187,6 +191,13 @@ class UserController extends Controller
         $statusUpdate = User::where('id', $id)->update(['status' => 0, 'updated_by' => Auth::user()->id]);
 
         if ($statusUpdate) {
+            // cancel all the bets the user made
+            $bets = Bets::where('user_id', $id)->where('status', 1)->get();
+            foreach($bets as $bet) {
+                $bet->status = 0;
+                $bet->save();
+            }
+
             $user->delete();
             return redirect()->route('users.index')->with('success', 'User soft-deleted successfully');
         } else {
@@ -215,6 +226,11 @@ class UserController extends Controller
         $statusUpdate = User::withTrashed()->where('id', $id)->update(['status' => 1, 'updated_by' => Auth::user()->id]);
 
         if ($statusUpdate) {
+            $bets = Bets::where('user_id', $id)->where('status', 0)->get();
+            foreach($bets as $bet) {
+                $bet->status = 1;
+                $bet->save();
+            }
             $user->restore();
             return redirect()->route('users.index')->with('success', 'User restored successfully');
         } else {

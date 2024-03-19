@@ -48,6 +48,8 @@ class PermissionRoleSeeder extends Seeder
             'edit_games' => 'Edit games',
             'delete_games' => 'Soft delete games',
             'restore_games' => 'Restore soft deleted games',
+            'view_accounts' => 'View accounts',
+            'configurations' => 'Configure the roles and permissions of the application',
         ];
 
         foreach ($permissions as $permission => $description) {
@@ -76,7 +78,7 @@ class PermissionRoleSeeder extends Seeder
         $role_name = 'Frontend User';
         $role_desc = 'Can view sports games and place bets';
         $role = Role::updateOrCreate(['name' => $role_name], ['name' => $role_name, 'description' => $role_desc]);
-        $frontend_user_permissions = ['view_sports', 'create_bets', 'view_bets', 'edit_bets', 'delete_bets', 'view_users', 'edit_users', 'view_sports'];
+        $frontend_user_permissions = ['view_sports', 'create_bets', 'view_bets', 'edit_bets', 'delete_bets', 'view_users', 'edit_users', 'view_sports', 'view_accounts'];
         $frontend_user_permissions = Permission::whereIn('name', $frontend_user_permissions)->pluck('id', 'id')->all();
         $role->syncPermissions($frontend_user_permissions);
 

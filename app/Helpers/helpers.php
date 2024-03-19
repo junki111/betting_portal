@@ -37,7 +37,7 @@ if (!function_exists('user_name')) {
 
     function user_name($id)
     {
-        $user = User::where('id', $id)->first();
+        $user = User::withTrashed()->where('id', $id)->first();
         $name = $user->first_name . ' ' . $user->last_name;
 
         if ($name == null) {
@@ -45,5 +45,16 @@ if (!function_exists('user_name')) {
         }
 
         return $name;
+    }
+}
+
+if (!function_exists('logout_all_guards')) {
+    
+    function logout_all_guards()
+    {
+        // Log out the user from all guards
+        foreach (config('auth.guards') as $guard => $guardConfig) {
+            auth()->guard($guard)->logout();
+        }
     }
 }

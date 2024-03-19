@@ -95,7 +95,7 @@
                                         <select name="game_type_id" id="GameType" class="form-group custom-select"
                                             required>
                                             @foreach ($gametypes as $gametype)
-                                                <option value="{{ $gametype->id }}">{{ ucwords($gametype->name) }}
+                                                <option value="{{ $gametype->id }}">{{ $gametype->name }}
                                                 </option>
                                             @endforeach
                                         </select>

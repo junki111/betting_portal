@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('bet_type');
             $table->double('bet_amount');
             $table->double('bet_potential_winnings');
+            $table->string('result')->nullable();
             $table->integer('status')->default(1);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();

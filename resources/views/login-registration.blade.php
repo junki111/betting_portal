@@ -16,17 +16,13 @@
         <input type="checkbox" id="flip">
         <div class="cover">
             <div class="front">
-                <img src="{{ URL::asset('assets/images/value8logo.png') }}" alt="">
+                <img src="{{ URL::asset('assets/images/value8.png') }}" alt="">
                 <div class="text">
-                    <span class="text-1">Ready to be the next <br> Millionaire</span>
-                    <span class="text-2">Let's get started</span>
                 </div>
             </div>
             <div class="back">
                 <!--<img class="backImg" src="images/backImg.jpg" alt="">-->
                 <div class="text">
-                    <span class="text-1">Ready to be the next <br> Millionaire</span>
-                    <span class="text-2">Get Registered Today</span>
                 </div>
             </div>
         </div>

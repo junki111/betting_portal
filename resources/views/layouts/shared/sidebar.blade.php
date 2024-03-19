@@ -1,7 +1,8 @@
 <!-- ========== Left Sidebar Start ========== -->
 <div class="left-side-menu">
     <div class="media user-profile mt-2 mb-2">
-        <img src="" class="avatar-sm rounded-circle mr-2" alt="admin-template" />
+        <img src="{{ URL::asset('assets/images/avatar.png') }}" class="avatar-sm rounded-circle mr-2"
+            alt="admin-template" />
 
         <div class="media-body">
             @if (auth()->check())

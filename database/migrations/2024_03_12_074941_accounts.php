@@ -17,8 +17,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('bet_id');
-            $table->integer('outcome');
-            $table->double('amount_won');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('bet_id')->references('id')->on('bets');
+            $table->string('outcome');
+            $table->double('amount');
             $table->timestamps();
         });
     }
